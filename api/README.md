@@ -1,10 +1,4 @@
-# API de gestión de pólizas
-
-Java 21, Spring Boot, arquitectura hexagonal y H2 en memoria. No requiere instalar una base de datos ni Maven.
-
 ## Ejecutar
-
-Requisito: JDK 21 con JAVA_HOME configurado. La primera ejecución necesita internet para descargar Maven y dependencias.
 
 Desde la raíz del repositorio:
 
@@ -12,8 +6,6 @@ Desde la raíz del repositorio:
 cd api
 ./mvnw spring-boot:run
 ```
-
-En PowerShell: `cd api` y luego `.\mvnw.cmd spring-boot:run`.
 
 - [Swagger UI](http://localhost:8080/swagger-ui/index.html)
 - [OpenAPI JSON](http://localhost:8080/v3/api-docs)
@@ -27,34 +19,16 @@ Cada arranque crea una individual IND-001 con canon 1000000 y una colectiva COL-
 
 ## Endpoints
 
-| Método | Ruta | Acción |
-| --- | --- | --- |
-| GET | /polizas?tipo=INDIVIDUAL&estado=ACTIVA | Listar con filtros opcionales. |
-| GET | /polizas/{id}/riesgos | Consultar riesgos. |
-| POST | /polizas/{id}/renovar | Renovar con IPC. |
-| POST | /polizas/{id}/cancelar | Cancelar póliza y riesgos. |
-| POST | /polizas/{id}/riesgos | Agregar riesgo a colectiva. |
-| POST | /riesgos/{id}/cancelar | Cancelar riesgo. |
-| POST | /core-mock/evento | Registrar intento de actualización CORE. |
-| GET | /health | Salud de la aplicación y base local. |
-
-Ejemplos para Bash, usando los IDs iniciales:
-
-```bash
-curl -H 'x-api-key: 123456' 'http://localhost:8080/polizas?tipo=INDIVIDUAL&estado=ACTIVA'
-
-curl -X POST http://localhost:8080/polizas/1/renovar \
-  -H 'x-api-key: 123456' -H 'Content-Type: application/json' \
-  -d '{"ipc":5.2}'
-
-curl -X POST http://localhost:8080/polizas/2/riesgos \
-  -H 'x-api-key: 123456' -H 'Content-Type: application/json' \
-  -d '{"direccion":"Calle 10","arrendatario":"Ana","beneficiario":"Luis","canonMensual":1500000.00}'
-
-curl -X POST -H 'x-api-key: 123456' http://localhost:8080/polizas/2/cancelar
-```
-
-En PowerShell puedes usar Swagger o `curl.exe` adaptando el escape de JSON.
+| Método | Ruta                                   | Acción                                   |
+| ------ | -------------------------------------- | ---------------------------------------- |
+| GET    | /polizas?tipo=INDIVIDUAL&estado=ACTIVA | Listar con filtros opcionales.           |
+| GET    | /polizas/{id}/riesgos                  | Consultar riesgos.                       |
+| POST   | /polizas/{id}/renovar                  | Renovar con IPC.                         |
+| POST   | /polizas/{id}/cancelar                 | Cancelar póliza y riesgos.               |
+| POST   | /polizas/{id}/riesgos                  | Agregar riesgo a colectiva.              |
+| POST   | /riesgos/{id}/cancelar                 | Cancelar riesgo.                         |
+| POST   | /core-mock/evento                      | Registrar intento de actualización CORE. |
+| GET    | /health                                | Salud de la aplicación y base local.     |
 
 ## Reglas
 
@@ -80,19 +54,12 @@ Las entidades JPA están separadas del dominio; los adaptadores implementan puer
 
 Toda modificación efectiva invoca por HTTP el mock antes de guardar. Si falla, responde 502 y no guarda cambios locales. El mock registra evento y polizaId en logs. Un éxito remoto seguido de un fallo local requiere conciliación: no se implementa una transacción distribuida.
 
-La exclusión mutua de comandos funciona en una sola instancia. El diseño de producción, con coordinación distribuida, Outbox y notificaciones, se describe en [módulo 1](../docs/modulo-1/README.md). La práctica mantiene solo la vigencia actual en Poliza y participantes como textos en Riesgo; no implementa todo el modelo histórico de producción. Los totales expuestos se calculan sobre riesgos activos actuales, sin contabilidad histórica ni devoluciones.
-
 ## Configuración
 
 | Variable | Valor por defecto |
-| --- | --- |
-| PORT | 8080 |
-| API_KEY | 123456 |
-| CORE_BASE_URL | http://localhost:puerto configurado |
-
-El adaptador envía la API key al CORE, con timeout de conexión de 2 segundos y lectura de 3 segundos. No reintenta automáticamente modificaciones de resultado incierto. /health no consulta el CORE.
-
-Errores en formato Problem Detail: 400 entrada inválida, 401 clave inválida, 404 recurso inexistente, 409 regla de negocio y 502 integración.
+| -------- | ----------------- |
+| PORT     | 8080              |
+| API_KEY  | 123456            |
 
 ## Pruebas y empaquetado
 
@@ -101,5 +68,3 @@ Errores en formato Problem Detail: 400 entrada inválida, 401 clave inválida, 4
 ./mvnw package
 java -jar target/polizas-api-1.0.0.jar
 ```
-
-En Windows usa `.\mvnw.cmd`. Las pruebas verifican reglas, cálculo de IPC, cancelación en cascada, filtros, seguridad, Swagger, healthcheck y solicitudes HTTP a un servidor CORE de prueba, incluidos fallos sin persistencia local.
