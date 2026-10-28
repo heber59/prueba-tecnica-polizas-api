@@ -9,12 +9,4 @@ Plataforma de gestión de pólizas individuales y colectivas de arrendamiento.
 
 ## Diagramas y entrega
 
-Los diagramas de componentes y entidades/relaciones se elaboran en Lucidchart. Sus enlaces de lectura y exportaciones se incorporarán cuando estén disponibles; las exportaciones se guardarán en `diagramas/` y se integrarán en el PDF final. Los enlaces serán complementarios.
-
-Las reglas y aclaraciones permanecen en estos documentos para no sobrecargar los diagramas. Este contenido se consolidará con los demás módulos documentales en un PDF que también incluirá el enlace al repositorio del módulo 2.
-
-## Alcance
-
-El diseño representa una propuesta de producción. El módulo 2 implementará una versión simplificada con Spring Boot, capas controller/service/repository, Poliza y Riesgo, persistencia local, API key y CORE mock HTTP.
-
-Broker, proveedores reales de correo/SMS, renovación programada y alta disponibilidad son elementos del diseño, no funcionalidades ya implementadas.
+https://lucid.app/lucidchart/94c3d30f-041a-43bf-b176-050684efa278/edit?viewport_loc=-240%2C-196%2C3248%2C1730%2C0_0&invitationId=inv_2dab0233-ebc9-47dc-aabd-1cf138a3e5ca
